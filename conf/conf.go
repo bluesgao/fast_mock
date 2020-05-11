@@ -24,35 +24,33 @@ type Conf struct {
 	}
 }
 
-// 将ymal文件中的内容进行加载
+// 将yaml文件中的内容进行加载
 func (c *Conf) Load(path string) error {
-	ext := c.guessFileType(path)
-	if ext == "" {
+	if flag := c.checkFileType(path); !flag {
 		return errors.New("cant not load" + path + " config")
 	}
 	return c.loadFromYaml(path)
 }
 
 // 判断配置文件名是否为yaml格式
-func (c *Conf) guessFileType(path string) string {
+func (c *Conf) checkFileType(path string) bool {
 	s := strings.Split(path, ".")
 	ext := s[len(s)-1]
 	switch ext {
 	case "yaml", "yml":
-		return "yaml"
+		return true
 	}
-	return ""
+	return false
 }
 
 // 将配置yaml文件中的进行加载
 func (c *Conf) loadFromYaml(path string) error {
-	yamlS, readErr := ioutil.ReadFile(path)
-	if readErr != nil {
-		return readErr
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
 	}
 	// yaml解析的时候c.data如果没有被初始化，会自动为你做初始化
-	err := yaml.Unmarshal(yamlS, &c)
-	if err != nil {
+	if err := yaml.Unmarshal(bytes, &c); err != nil {
 		return errors.New("can not parse " + path + " config")
 	}
 	return nil
