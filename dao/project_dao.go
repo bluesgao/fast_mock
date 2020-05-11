@@ -14,7 +14,7 @@ func NewProjectDao() ProjectDao {
 }
 
 func (dao ProjectDao) Create(project model.Project) (int64, error) {
-	result, err := dao.database.Db.Exec("INSERT INTO t_project(project_name,project_desc)VALUES (?,?)", project.ProjectName, project.ProjectDesc)
+	result, err := dao.database.GetDbCli().Exec("INSERT INTO t_project(project_name,project_desc)VALUES (?,?)", project.ProjectName, project.ProjectDesc)
 	if err != nil {
 		log.Printf("err: %+v", err)
 		return 0, err
@@ -29,7 +29,7 @@ func (dao ProjectDao) Create(project model.Project) (int64, error) {
 }
 
 //func (pd ProjectDao) Update(project model.Project) (int64, error) {
-//	result, err := pd.Db.Exec("UPDATE member SET money=money+3 WHERE id=?", 1)
+//	result, err := pd.DbCli.Exec("UPDATE member SET money=money+3 WHERE id=?", 1)
 //	if err != nil {
 //		fmt.Println(err)
 //		return 0, err

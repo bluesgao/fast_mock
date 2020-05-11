@@ -3,9 +3,9 @@ package biz
 import (
 	"fast_mock/dao"
 	"fast_mock/model"
+	"fast_mock/util"
 	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
 )
 
 type ProjectBiz struct {
@@ -26,7 +26,7 @@ func (biz ProjectBiz) CreateProject(ctx *gin.Context) {
 
 	if err := ctx.Bind(&project); err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusNotFound, gin.H{"code": "9999", "msg": "参数错误", "data": err.Error()})
+		util.ResponseByErr(ctx, "参数错误", err.Error())
 		return
 	}
 	log.Printf("CreateProject project: %+v \n", project)
@@ -34,9 +34,9 @@ func (biz ProjectBiz) CreateProject(ctx *gin.Context) {
 	ret, err := biz.dao.Create(project)
 	log.Printf("ret:%d, err:%s", ret, err)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"code": "9999", "msg": "创建错误", "data": &project})
+		util.ResponseByErr(ctx, "创建错误", err.Error())
 		return
 	}
-	ctx.JSON(http.StatusNotFound, gin.H{"code": "0000", "msg": "创建成功", "data": &project})
+	util.ResponseByOk(ctx, "创建成功", &project)
 	return
 }

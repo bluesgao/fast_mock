@@ -35,7 +35,7 @@ func (app *application) init() {
 	app.database = new(dao.Database)
 	app.database.Init()
 
-	// gin engin
+	// gin engine
 	app.server = gin.Default()
 	// router
 	setupRouter(app.server)
@@ -48,8 +48,7 @@ func (app *application) start() {
 
 func (app *application) shutdown() {
 	log.Println(">>>> app shutdown start <<<<")
-
-	defer app.database.Db.Close()
+	defer app.database.GetDbCli().Close()
 }
 
 func setupRouter(g *gin.Engine) {
@@ -59,17 +58,16 @@ func setupRouter(g *gin.Engine) {
 	//	log.Println("绑定验证器失败")
 	//}
 
-	g.GET("/hello", Hello) //联通性接口
+	g.GET("/hello", func(context *gin.Context) {
+		context.JSON(200, gin.H{
+			"code":    200,
+			"success": true,
+		})
+	}) //联通性接口
 
-	group := g.Group("/project") //项目接口
-	pb := biz.NewProjectBiz()
-	group.POST("/create", pb.CreateProject) //新增接口
-}
-
-func Hello(context *gin.Context) {
-	log.Println(">>>> hello gin start <<<<")
-	context.JSON(200, gin.H{
-		"code":    200,
-		"success": true,
-	})
+	//项目接口组
+	pg := g.Group("/project")
+	projectBiz := biz.NewProjectBiz()
+	//新增接口
+	pg.POST("/create", projectBiz.CreateProject)
 }
