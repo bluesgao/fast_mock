@@ -17,15 +17,15 @@ func NewModuleDao() ModuleDao {
 func (dao ModuleDao) Create(obj model.Module) (int64, error) {
 	result, err := dao.database.GetDbCli().Exec("INSERT INTO t_project_module(project_id,project_name,module_name,module_desc)VALUES (?,?,?,?)", obj.ProjectId, obj.ProjectName, obj.ModuleName, obj.ModuleDesc)
 	if err != nil {
-		log.Printf("ModuleDao.Create err: %+v", err)
+		log.Printf("ModuleDao.Create err: %+v \n", err)
 		return 0, err
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
-		log.Printf("ModuleDao.Create err: %+v", err)
+		log.Printf("ModuleDao.Create err: %+v \n", err)
 		return 0, err
 	}
-	log.Printf("ModuleDao.Create id: %+v", id)
+	log.Printf("ModuleDao.Create id: %+v \n", id)
 	return id, nil
 }
 
@@ -48,9 +48,9 @@ func (dao ModuleDao) List() ([]model.Project, error) {
 	var list [] model.Project
 	err := dao.database.GetDbCli().Select(&list, "SELECT * FROM t_project_module")
 	if err != nil {
-		log.Printf("ModuleDao.List err: %+v", err)
+		log.Printf("ModuleDao.List err: %+v \n", err)
 		return nil, err
 	}
-	log.Printf("ModuleDao.List list: %+v", list)
-	return list, err
+	log.Printf("ModuleDao.List list: %+v \n", list)
+	return list, nil
 }
