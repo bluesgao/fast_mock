@@ -40,3 +40,16 @@ func (biz ProjectBiz) CreateProject(ctx *gin.Context) {
 	util.ResponseByOk(ctx, "创建成功", &project)
 	return
 }
+
+func (biz ProjectBiz) ListProject(ctx *gin.Context) {
+	log.Printf("ListProject: %+v \n", ctx.Request)
+
+	list, err := biz.dao.List()
+	log.Printf("ListProject list:%+v, err:%+v", list, err)
+	if err != nil {
+		util.ResponseByErr(ctx, "查询错误", err.Error())
+		return
+	}
+	util.ResponseByOk(ctx, "查询成功", &list)
+	return
+}

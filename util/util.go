@@ -6,7 +6,7 @@ import (
 )
 
 func ResponseByOk(ctx *gin.Context, msg string, data interface{}) {
-	ctx.JSON(http.StatusOK, gin.H{"code": "0000", "msg": "错误:" + msg, "data": data})
+	ctx.JSON(http.StatusOK, gin.H{"code": "0000", "msg": "成功:" + msg, "data": data})
 }
 
 func ResponseByErr(ctx *gin.Context, msg string, data interface{}) {

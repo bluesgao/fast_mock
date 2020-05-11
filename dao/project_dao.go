@@ -42,3 +42,15 @@ func (dao ProjectDao) Create(project model.Project) (int64, error) {
 //	fmt.Println(rows)
 //	return rows, nil
 //}
+
+func (dao ProjectDao) List() ([]model.Project, error) {
+	//查询多条
+	var list [] model.Project
+	err := dao.database.GetDbCli().Select(&list, "SELECT * FROM t_project")
+	if err != nil {
+		log.Printf("List err: %+v", err)
+		return nil, err
+	}
+	log.Printf("List list: %+v", list)
+	return list, err
+}

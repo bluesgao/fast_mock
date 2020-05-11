@@ -17,7 +17,7 @@ type Database struct {
 func (db *Database) Init() {
 	log.Printf("database init")
 	//DbCli, err := sqlx.Open("数据库类型", "用户名:密码@tcp(地址:端口)/数据库名?charset=编码")
-	client, err := sqlx.Connect("mysql", "root:Gx-123456@tcp(47.97.205.190:3306)/test?charset=utf8mb4")
+	client, err := sqlx.Connect("mysql", "root:Gx-123456@tcp(47.97.205.190:3306)/test?charset=utf8mb4&parseTime=true")
 	if err != nil {
 		panic(err)
 	}

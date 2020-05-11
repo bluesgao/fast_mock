@@ -70,4 +70,6 @@ func setupRouter(g *gin.Engine) {
 	projectBiz := biz.NewProjectBiz()
 	//新增接口
 	pg.POST("/create", projectBiz.CreateProject)
+	//列表接口
+	pg.GET("/list", projectBiz.ListProject)
 }
