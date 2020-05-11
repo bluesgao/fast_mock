@@ -1,46 +1,44 @@
 package dao
 
 import (
-	"fast_mock/entity"
-	"fmt"
-
-	"github.com/jmoiron/sqlx"
+	"fast_mock/model"
+	"log"
 )
 
 type ProjectDao struct {
-	DB *sqlx.DB //mysql
+	database *Database
 }
 
 func NewProjectDao() ProjectDao {
-	return ProjectDao{DB: GetDb()}
+	return ProjectDao{database: database}
 }
 
-func (pd ProjectDao) Create(project entity.Project) (int64, error) {
-	result, err := Db.Exec("INSERT INTO t_project(project_name,project_desc)VALUES (?,?)", project.ProjectName, project.ProjectDesc)
+func (dao ProjectDao) Create(project model.Project) (int64, error) {
+	result, err := dao.database.Db.Exec("INSERT INTO t_project(project_name,project_desc)VALUES (?,?)", project.ProjectName, project.ProjectDesc)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("err: %+v", err)
 		return 0, err
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("err: %+v", err)
 		return 0, err
 	}
-	fmt.Println(id)
+	log.Printf("id: %+v", id)
 	return id, nil
 }
 
-func (pd ProjectDao) Update(project entity.Project) (int64, error) {
-	result, err := Db.Exec("UPDATE member SET money=money+3 WHERE id=?", 1)
-	if err != nil {
-		fmt.Println(err)
-		return 0, err
-	}
-	rows, err := result.RowsAffected()
-	if err != nil {
-		fmt.Println(err)
-		return 0, nil
-	}
-	fmt.Println(rows)
-	return rows, nil
-}
+//func (pd ProjectDao) Update(project model.Project) (int64, error) {
+//	result, err := pd.Db.Exec("UPDATE member SET money=money+3 WHERE id=?", 1)
+//	if err != nil {
+//		fmt.Println(err)
+//		return 0, err
+//	}
+//	rows, err := result.RowsAffected()
+//	if err != nil {
+//		fmt.Println(err)
+//		return 0, nil
+//	}
+//	fmt.Println(rows)
+//	return rows, nil
+//}
