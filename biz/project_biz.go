@@ -13,11 +13,9 @@ type ProjectBiz struct {
 }
 
 func NewProjectBiz() ProjectBiz {
-	biz := ProjectBiz{
+	return ProjectBiz{
 		dao: dao.NewProjectDao(),
 	}
-	return biz
-
 }
 
 func (biz ProjectBiz) CreateProject(ctx *gin.Context) {
@@ -31,29 +29,24 @@ func (biz ProjectBiz) CreateProject(ctx *gin.Context) {
 	}
 	log.Printf("ProjectBiz.CreateProject project: %+v \n", project)
 
-	id, err := biz.dao.Create(project)
-	log.Printf("id:%d, err:%s", id, err)
-	if err != nil {
+	if id, err := biz.dao.Create(project); err != nil {
 		util.ResponseByErr(ctx, "创建错误", err.Error())
-		return
+	} else {
+		log.Printf("id:%d, err:%s", id, err)
+		project.Id = id
+		util.ResponseByOk(ctx, "创建成功", &project)
 	}
-
-	project.Id = id
-	util.ResponseByOk(ctx, "创建成功", &project)
-	return
 }
 
 func (biz ProjectBiz) ListProject(ctx *gin.Context) {
 	log.Printf("ProjectBiz.ListProject: %+v \n", ctx.Request)
 
-	list, err := biz.dao.List()
-	log.Printf("ProjectBiz.ListProject list:%+v, err:%+v", list, err)
-	if err != nil {
+	if list, err := biz.dao.List(); err != nil {
 		util.ResponseByErr(ctx, "查询错误", err.Error())
-		return
+	} else {
+		log.Printf("ProjectBiz.ListProject list:%+v, err:%+v", list, err)
+		util.ResponseByOk(ctx, "查询成功", &list)
 	}
-	util.ResponseByOk(ctx, "查询成功", &list)
-	return
 }
 
 func (biz ProjectBiz) updateProject(ctx *gin.Context) {
@@ -64,12 +57,10 @@ func (biz ProjectBiz) updateProject(ctx *gin.Context) {
 		util.ResponseByErr(ctx, "参数错误", err.Error())
 		return
 	}
-	id, err := biz.dao.UpdateById(project)
-	log.Printf("ProjectBiz.updateProject id,:%+v, err:%+v", id, err)
-	if err != nil {
+	if id, err := biz.dao.UpdateById(project); err != nil {
 		util.ResponseByErr(ctx, "更新错误", err.Error())
-		return
+	} else {
+		log.Printf("ProjectBiz.updateProject id,:%+v, err:%+v", id, err)
+		util.ResponseByOk(ctx, "更新成功", id)
 	}
-	util.ResponseByOk(ctx, "更新成功", id)
-	return
 }

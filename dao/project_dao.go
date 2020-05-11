@@ -48,11 +48,11 @@ func (dao ProjectDao) List() ([]model.Project, error) {
 	var list [] model.Project
 	err := dao.database.GetDbCli().Select(&list, "SELECT * FROM t_project")
 	if err != nil {
-		log.Printf("ProjectDao.List err: %+v", err)
+		log.Printf("ProjectDao.List err: %+v \n", err)
 		return nil, err
 	}
-	log.Printf("ProjectDao.List list: %+v", list)
-	return list, err
+	log.Printf("ProjectDao.List list: %+v \n", list)
+	return list, nil
 }
 
 func (dao ProjectDao) ListByNextId(nextId int64) ([]model.Project, error) {
@@ -60,9 +60,9 @@ func (dao ProjectDao) ListByNextId(nextId int64) ([]model.Project, error) {
 	var list [] model.Project
 	err := dao.database.GetDbCli().Select(&list, "SELECT * FROM t_project WHERE id>=? LIMIT 10", nextId)
 	if err != nil {
-		log.Printf("ProjectDao.ListByNextId err: %+v", err)
+		log.Printf("ProjectDao.ListByNextId err: %+v \n", err)
 		return nil, err
 	}
-	log.Printf("ProjectDao.ListByNextId list: %+v", list)
-	return list, err
+	log.Printf("ProjectDao.ListByNextId list: %+v \n", list)
+	return list, nil
 }
