@@ -55,6 +55,17 @@ func (dao ProjectDao) List() ([]model.Project, error) {
 	return list, nil
 }
 
+func (dao ProjectDao) GetOne(id int64) (model.Project, error) {
+	var project model.Project
+	err := dao.database.GetDbCli().Get(&project, "SELECT * FROM t_project WHERE id=?", id)
+	if err != nil {
+		log.Printf("ProjectDao.GetOne err: %+v \n", err)
+		return project, err
+	}
+	log.Printf("ProjectDao.GetOne project: %+v \n", project)
+	return project, nil
+}
+
 func (dao ProjectDao) ListByNextId(nextId int64) ([]model.Project, error) {
 	log.Printf("ProjectDao.ListByNextId nextId: %d", nextId)
 	var list [] model.Project

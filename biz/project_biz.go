@@ -6,6 +6,7 @@ import (
 	"fast_mock/util"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 type ProjectBiz struct {
@@ -65,18 +66,23 @@ func (biz ProjectBiz) UpdateProject(ctx *gin.Context) {
 	}
 }
 
-func (biz ProjectBiz) GetProject(ctx *gin.Context) {
-	log.Printf("ProjectBiz.GetProject: %+v \n", ctx.Request)
-	var input dto.ProjectDto
-	if err := ctx.Bind(&input); err != nil {
-		log.Println(err.Error())
-		util.ResponseByErr(ctx, "参数错误", err.Error())
+func (biz ProjectBiz) GetProjectById(ctx *gin.Context) {
+	log.Printf("ProjectBiz.GetProjectById: %+v \n", ctx.Request)
+	if id, ok := ctx.Params.Get("id"); !ok {
+		util.ResponseByErr(ctx, "参数错误"+"id不能为空", nil)
 		return
-	}
-	if id, err := biz.dao.UpdateById(dto.ToProjectModel(input)); err != nil {
-		util.ResponseByErr(ctx, "查询错误", err.Error())
 	} else {
-		log.Printf("ProjectBiz.GetProject id:%+v, err:%+v \n", id, err)
-		util.ResponseByOk(ctx, "查询成功", id)
+		if projectId, err := strconv.ParseInt(id, 10, 64); err != nil {
+			util.ResponseByErr(ctx, "参数错误"+"id必须是数字", nil)
+			return
+		} else {
+			log.Printf("ProjectBiz.GetProjectById projectId: %+v \n", projectId)
+			if ret, err := biz.dao.GetOne(projectId); err != nil {
+				util.ResponseByErr(ctx, "查询错误", err.Error())
+			} else {
+				log.Printf("ProjectBiz.GetProjectById ret:%+v, err:%+v \n", ret, err)
+				util.ResponseByOk(ctx, "查询成功", dto.ToProjectDto(ret))
+			}
+		}
 	}
 }

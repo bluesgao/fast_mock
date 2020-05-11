@@ -72,6 +72,8 @@ func setupRouter(g *gin.Engine) {
 	pg.POST("/create", projectBiz.CreateProject)
 	//列表接口
 	pg.GET("/list", projectBiz.ListProject)
+	//单个接口
+	pg.GET("/detail/:id", projectBiz.GetProjectById)
 
 	//模块接口组
 	mg := g.Group("/module")
