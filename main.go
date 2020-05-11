@@ -33,7 +33,7 @@ func (app *application) init() {
 
 	//数据库
 	app.database = new(dao.Database)
-	app.database.Init()
+	app.database.Init(app.config)
 
 	// gin engine
 	app.server = gin.Default()
@@ -43,7 +43,7 @@ func (app *application) init() {
 
 func (app *application) start() {
 	log.Println(">>>> app start start <<<<")
-	app.server.Run("localhost:8080")
+	app.server.Run("localhost:" + app.config.Server.Port)
 }
 
 func (app *application) shutdown() {
@@ -72,4 +72,12 @@ func setupRouter(g *gin.Engine) {
 	pg.POST("/create", projectBiz.CreateProject)
 	//列表接口
 	pg.GET("/list", projectBiz.ListProject)
+
+	//模块接口组
+	mg := g.Group("/module")
+	moduleBiz := biz.NewModuleBiz()
+	//新增接口
+	mg.POST("/create", moduleBiz.CreateModule)
+	//列表接口
+	mg.GET("/list", moduleBiz.ListModule)
 }
