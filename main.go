@@ -64,7 +64,7 @@ func (app *Application) init() {
 	app.config.Load("conf.yaml")
 
 	//数据库
-	dao.MongoInit()
+	dao.MongoInit(app.config)
 
 	// gin engine
 	app.server = gin.Default()

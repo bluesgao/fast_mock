@@ -19,6 +19,12 @@ type Conf struct {
 		Database string `yaml:"database"`
 		Charset  string `yaml:"charset"`
 	}
+	Mongo struct {
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+	}
 	Server struct {
 		Port string `yaml:"port"`
 	}

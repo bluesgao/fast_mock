@@ -9,3 +9,8 @@ db:
   password: Gx-123456
   charset: utf8mb4
   loc: Asia/Shanghai
+mongo:
+  host: 47.97.205.190
+  port: 27017
+  username: admin
+  password: 123456

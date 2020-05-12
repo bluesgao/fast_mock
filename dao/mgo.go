@@ -2,6 +2,8 @@ package dao
 
 import (
 	"context"
+	"fast_mock/conf"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,8 +27,10 @@ func GetMongoCli() *MongoCli {
 	return mgoCli
 }
 
-func MongoInit() {
-	uri := "mongodb://admin:123456@47.97.205.190:27017"
+func MongoInit(conf *conf.Conf) {
+	log.Printf("database init conf:%+v \n", conf)
+	//uri := "mongodb://admin:123456@47.97.205.190:27017"
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s", conf.Mongo.Username, conf.Mongo.Password, conf.Mongo.Host, conf.Mongo.Port)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel() //养成良好的习惯，在调用WithTimeout之后defer cancel()
 	opts := &options.ClientOptions{}
