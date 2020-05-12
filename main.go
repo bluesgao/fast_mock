@@ -82,4 +82,12 @@ func setupRouter(g *gin.Engine) {
 	mg.POST("/create", moduleBiz.CreateModule)
 	//列表接口
 	mg.GET("/list", moduleBiz.ListModule)
+
+	//api接口组
+	ag := g.Group("/api")
+	apiBiz := biz.NewApiBiz()
+	//新增接口
+	ag.POST("/create", apiBiz.CreateApi)
+	//列表接口
+	ag.GET("/list", apiBiz.ListApi)
 }
