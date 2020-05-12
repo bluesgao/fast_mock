@@ -11,33 +11,33 @@ import (
 )
 
 type Mgo struct {
-	uri    string //数据库网络地址(mongodb://ip:port)  (mongodb://username:password@ip:port)
+	//uri    string //数据库网络地址(mongodb://ip:port)  (mongodb://username:password@ip:port)
 	client *mongo.Client
 }
 
-func NewMgo(uri string) Mgo {
+func NewMgo() *Mgo {
 	m := Mgo{}
-	m.uri = uri
-	m.GetClient()
-	return m
+	m.Init()
+	return &m
 
 }
 
-func (m *Mgo) GetClient() {
+func (m *Mgo) Init() {
+	uri := "mongodb://admin:123456@47.97.205.190:27017"
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel() //养成良好的习惯，在调用WithTimeout之后defer cancel()
 	opts := &options.ClientOptions{}
 	//opts.SetAuth(options.Credential{AuthMechanism: "SCRAM-SHA-1", Username: "admin", Password: "123456"})
 	opts.SetMaxPoolSize(5) //设置连接池大小
-	opts.ApplyURI(m.uri)
-	log.Printf("mongo client opts:%+v \n", opts)
+	opts.ApplyURI(uri)
+	log.Printf("mongo Init opts:%+v \n", opts)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
-		log.Fatalf("mongo client err:%+v \n", err)
+		log.Fatalf("mongo Init err:%+v \n", err)
 	}
 
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		log.Fatalf("mongo client Ping err:%+v \n", err)
+		log.Fatalf("mongo Init Ping err:%+v \n", err)
 	}
 
 	m.client = client

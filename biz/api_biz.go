@@ -10,14 +10,14 @@ import (
 )
 
 type ApiBiz struct {
-	mgo      dao.Mgo
+	mgo      *dao.Mgo
 	database string
 	coll     string
 }
 
 func NewApiBiz() ApiBiz {
 	biz := ApiBiz{}
-	biz.mgo = dao.NewMgo("mongodb://admin:123456@47.97.205.190:27017")
+	biz.mgo = dao.NewMgo()
 	biz.database = "mock"
 	biz.coll = "mock_api"
 	return biz
