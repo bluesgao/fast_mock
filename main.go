@@ -13,42 +13,10 @@ func init() {
 }
 
 func main() {
-	app := application{}
+	app := Application{}
 	app.init()
 	app.start()
 	defer app.shutdown()
-}
-
-type application struct {
-	config   *conf.Conf
-	server   *gin.Engine
-	database *dao.Database
-}
-
-func (app *application) init() {
-	log.Println(">>>> app init start <<<<")
-	//配置文件
-	app.config = new(conf.Conf)
-	app.config.Load("conf.yaml")
-
-	//数据库
-	app.database = new(dao.Database)
-	app.database.Init(app.config)
-
-	// gin engine
-	app.server = gin.Default()
-	// router
-	setupRouter(app.server)
-}
-
-func (app *application) start() {
-	log.Println(">>>> app start start <<<<")
-	app.server.Run("localhost:" + app.config.Server.Port)
-}
-
-func (app *application) shutdown() {
-	log.Println(">>>> app shutdown start <<<<")
-	defer app.database.GetDbCli().Close()
 }
 
 func setupRouter(g *gin.Engine) {
@@ -69,25 +37,47 @@ func setupRouter(g *gin.Engine) {
 	pg := g.Group("/project")
 	projectBiz := biz.NewProjectBiz()
 	//新增接口
-	pg.POST("/create", projectBiz.CreateProject)
+	pg.POST("/create", projectBiz.Create)
 	//列表接口
-	pg.GET("/list", projectBiz.ListProject)
+	pg.GET("/list", projectBiz.List)
 	//单个接口
-	pg.GET("/detail/:id", projectBiz.GetProjectById)
-
-	//模块接口组
-	mg := g.Group("/module")
-	moduleBiz := biz.NewModuleBiz()
-	//新增接口
-	mg.POST("/create", moduleBiz.CreateModule)
-	//列表接口
-	mg.GET("/list", moduleBiz.ListModule)
+	pg.GET("/detail/:id", projectBiz.GetById)
 
 	//api接口组
 	ag := g.Group("/api")
 	apiBiz := biz.NewApiBiz()
 	//新增接口
-	ag.POST("/create", apiBiz.CreateApi)
+	ag.POST("/create", apiBiz.Create)
 	//列表接口
-	ag.GET("/list", apiBiz.ListApi)
+	ag.GET("/list", apiBiz.List)
+}
+
+type Application struct {
+	config *conf.Conf
+	server *gin.Engine
+}
+
+func (app *Application) init() {
+	log.Println(">>>> app init start <<<<")
+	//配置文件
+	app.config = new(conf.Conf)
+	app.config.Load("conf.yaml")
+
+	//数据库
+	dao.MongoInit()
+
+	// gin engine
+	app.server = gin.Default()
+	// router
+	setupRouter(app.server)
+}
+
+func (app *Application) start() {
+	log.Println(">>>> app start start <<<<")
+	app.server.Run("localhost:" + app.config.Server.Port)
+}
+
+func (app *Application) shutdown() {
+	log.Println(">>>> app shutdown start <<<<")
+	defer dao.MongoClose()
 }

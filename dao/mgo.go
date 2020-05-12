@@ -10,19 +10,22 @@ import (
 	"time"
 )
 
-type Mgo struct {
+var mgoCli *MongoCli
+
+type MongoCli struct {
 	//uri    string //数据库网络地址(mongodb://ip:port)  (mongodb://username:password@ip:port)
 	client *mongo.Client
 }
 
-func NewMgo() *Mgo {
-	m := Mgo{}
-	m.Init()
-	return &m
-
+func MongoClose() {
+	mgoCli.client.Disconnect(context.TODO())
 }
 
-func (m *Mgo) Init() {
+func GetMongoCli() *MongoCli {
+	return mgoCli
+}
+
+func MongoInit() {
 	uri := "mongodb://admin:123456@47.97.205.190:27017"
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel() //养成良好的习惯，在调用WithTimeout之后defer cancel()
@@ -30,31 +33,32 @@ func (m *Mgo) Init() {
 	//opts.SetAuth(options.Credential{AuthMechanism: "SCRAM-SHA-1", Username: "admin", Password: "123456"})
 	opts.SetMaxPoolSize(5) //设置连接池大小
 	opts.ApplyURI(uri)
-	log.Printf("mongo Init opts:%+v \n", opts)
+	log.Printf("mongo MongoInit opts:%+v \n", opts)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
-		log.Fatalf("mongo Init err:%+v \n", err)
+		log.Fatalf("mongo MongoInit err:%+v \n", err)
 	}
 
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		log.Fatalf("mongo Init Ping err:%+v \n", err)
+		log.Fatalf("mongo MongoInit Ping err:%+v \n", err)
 	}
 
-	m.client = client
-	return
+	mgoCli = &MongoCli{
+		client: client,
+	}
 }
 
 /**
 	database   string //要连接的数据库
 	collection string //要连接的集合
  */
-func (m *Mgo) GetCollection(database string, coll string) *mongo.Collection {
+func (m *MongoCli) GetCollection(database string, coll string) *mongo.Collection {
 	collection := m.client.Database(database).Collection(coll)
 	return collection
 }
 
 //插入单个
-func (m *Mgo) InsertOne(ctx context.Context, database string, coll string, value interface{}) (interface{}, error) {
+func (m *MongoCli) InsertOne(ctx context.Context, database string, coll string, value interface{}) (interface{}, error) {
 	if ctx == nil {
 		ctx, _ = context.WithTimeout(context.Background(), 3*time.Second)
 	}
@@ -67,7 +71,7 @@ func (m *Mgo) InsertOne(ctx context.Context, database string, coll string, value
 }
 
 // 查询单个
-func (m *Mgo) FindOne(ctx context.Context, database string, coll string, key string, value interface{}) (bson.M, error) {
+func (m *MongoCli) FindOne(ctx context.Context, database string, coll string, key string, value interface{}) (bson.M, error) {
 	if ctx == nil {
 		ctx, _ = context.WithTimeout(context.Background(), 3*time.Second)
 	}
@@ -81,7 +85,7 @@ func (m *Mgo) FindOne(ctx context.Context, database string, coll string, key str
 }
 
 // 查询多个
-func (m *Mgo) FindMany(ctx context.Context, database string, coll string, filter bson.M) ([]bson.M, error) {
+func (m *MongoCli) FindMany(ctx context.Context, database string, coll string, filter bson.M) ([]bson.M, error) {
 	if ctx == nil {
 		ctx, _ = context.WithTimeout(context.Background(), 3*time.Second)
 	}
